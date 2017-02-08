@@ -7,7 +7,7 @@ public class CommandInfo {
 	/**
 	 * 方法名
 	 */
-	public String strName = null;
+	public String name = null;
 	
 	/**
 	 * 参数列表
@@ -26,7 +26,7 @@ public class CommandInfo {
 			char flag = strCmd.charAt(0);
 			if (flag == '@') {//系统方法
 				CommandInfo ci = new CommandInfo();
-				ci.strName = "@";
+				ci.name = "@";
 				strCmd = strCmd.substring(1, strCmd.length());
 				ci.arrArgs.add(strCmd);
 				return ci;
@@ -39,7 +39,7 @@ public class CommandInfo {
 				strCmd = strCmd.substring(1, strCmd.length());
 				
 				//获取命令名
-				ci.strName = strCmd.substring(0, strCmd.indexOf('('));
+				ci.name = strCmd.substring(0, strCmd.indexOf('('));
 				
 				//获取参数列表
 				String strParam = strCmd.substring(strCmd.indexOf('(') + 1, strCmd.indexOf(')'));

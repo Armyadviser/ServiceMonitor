@@ -1,6 +1,8 @@
 package com.gesoft.adsl.tools.ssh2script;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import com.gesoft.adsl.tools.ssh2.CommandInfo;
 
@@ -33,18 +35,16 @@ public class ScriptParser {
 	 * @param strPath	文件绝对路径
 	 * @return	根据各条命令生成list
 	 */
-	public static ArrayList<CommandInfo> parse(String strPath) {
+	public static List<CommandInfo> parse(String strPath) {
 		FileReader reader = new FileReader();
 		boolean bOpen = reader.open(strPath);
 		if (!bOpen) {
 			System.err.println("文件打开失败：" + strPath);
-			return null;
+			return Collections.emptyList();
 		}
-		
-		ArrayList<CommandInfo> commandList = null;
-		
+
 		try {
-			commandList = new ArrayList<CommandInfo>();
+			List<CommandInfo> commandList = new ArrayList<CommandInfo>();
 			while (reader.hasNext()) {
 				String strCmd = reader.getLine();
 				
@@ -59,7 +59,7 @@ public class ScriptParser {
 				//跳转其他文件
 				if (strCmd.charAt(0) == '~') {
 					String strOtherPath = strCmd.substring(1, strCmd.length());
-					ArrayList<CommandInfo> otherList = parse(strOtherPath);
+					List<CommandInfo> otherList = parse(strOtherPath);
 					if (otherList != null) {
 						commandList.addAll(otherList);
 					}
@@ -77,12 +77,15 @@ public class ScriptParser {
 				
 				commandList.add(ci);
 			}
+
+			return commandList;
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			reader.close();
 		}
-		reader.close();
-		
-		return commandList;
+
+		return Collections.emptyList();
 	}
 	
 	

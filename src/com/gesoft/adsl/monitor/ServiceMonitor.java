@@ -120,15 +120,17 @@ public class ServiceMonitor {
 						sbLog.append("Retry:").append(currentTime).append("-----\n");
 					}
 					//执行脚本，获得返回值
-					int iExitCode = ShellMain.executeScript(
+					ShellMain sm = new ShellMain(
 							mMonitor.getBasePath() + mMonitor.getScriptPath(strSection));
+					sm.run();
+					int nExitCode = sm.getExitCode();
 					
 					//判断是否发送短信或邮件
-					boolean bSend = ifSend(strSection, iExitCode, currentTime, nRepeat);
+					boolean bSend = ifSend(strSection, nExitCode, currentTime, nRepeat);
 					
 					//根据返回值从信息列表中获取对应意义
-					String strMessage = mMonitor.getMessage(iExitCode);
-					sbLog.append("ExitCode:").append(iExitCode)
+					String strMessage = mMonitor.getMessage(nExitCode);
+					sbLog.append("ExitCode:").append(nExitCode)
 							.append(",Check Result：").append(strMessage).append("\n");
 					
 					if (bSend) {
@@ -155,7 +157,7 @@ public class ServiceMonitor {
 							.append(strSection).append(" End ").append(lPassed).append("s-----\n");
 					
 					//正常运行，不进行下一次尝试
-					if (iExitCode == 0) {
+					if (nExitCode == 0) {
 						break;
 					}
 				}

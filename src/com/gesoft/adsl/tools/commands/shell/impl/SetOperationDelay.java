@@ -7,7 +7,7 @@ import com.gesoft.adsl.tools.commands.shell.Command;
 import com.gesoft.adsl.tools.ssh2.CrtException;
 import com.gesoft.adsl.tools.ssh2.CrtExecutor;
 
-class SetOprationDelay extends Command {
+class SetOperationDelay extends Command {
 
 	@Override
 	public int getArgsSize() {

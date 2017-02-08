@@ -25,7 +25,6 @@ class Copy extends Command{
 		}
 		
 		mGlobal.put(strLog, strReturnValue);
-		mGlobal.remove(strReturn);
 		return null;
 	}
 

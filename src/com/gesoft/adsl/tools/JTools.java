@@ -5,6 +5,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class JTools {
@@ -66,5 +68,11 @@ public class JTools {
 			bRes = fp.isDirectory() || fp.mkdir();
 		} catch(Exception ignored) {}
         return bRes;
+    }
+
+    public static boolean isDigit(String string) {
+        Pattern pattern = Pattern.compile("-?[0-9]+.?[0-9]+");
+        Matcher matcher = pattern.matcher(string);
+        return matcher.matches();
     }
 }

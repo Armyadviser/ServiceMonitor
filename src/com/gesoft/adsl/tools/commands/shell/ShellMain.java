@@ -1,92 +1,104 @@
 package com.gesoft.adsl.tools.commands.shell;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.gesoft.adsl.tools.JTools;
 import com.gesoft.adsl.tools.commands.shell.impl.JudgeCommand;
 import com.gesoft.adsl.tools.ssh2.CommandInfo;
 import com.gesoft.adsl.tools.ssh2.CrtException;
 import com.gesoft.adsl.tools.ssh2script.ScriptParser;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class ShellMain {
-	
-	public static int executeScript(String strPath) {
-		ArrayList<CommandInfo> commandList = ScriptParser.parse(strPath);
-		if (commandList == null) {
-			return -1;
-		}
-		return executeScript(commandList);
+
+	private int nCurrentPos;
+
+	private int mScriptLength;
+
+	private List<CommandInfo> mCmdList;
+
+	/**
+	 * When the script file ends with the command exit(${num})
+	 * this value will be ${num}.
+	 */
+	private int nExitCode;
+
+	public ShellMain(String scriptPath) {
+		mCmdList = ScriptParser.parse(scriptPath);
+		nCurrentPos = 0;
+		mScriptLength = mCmdList.size();
 	}
 
-	public static int executeScript(List<CommandInfo> commandList) {
+	public int getExitCode() {
+		return nExitCode;
+	}
+	
+	public String run() {
+		Map<String, Object> mGlobal = new HashMap<String, Object>();
 		try {
-			//开始执行
-			Map<String, Object> mGlobal = new HashMap<String, Object>();
-			int size = commandList.size();
-			for(int i = 0; i < size; i++){
-				CommandInfo mCommInfo = commandList.get(i);
+			for(nCurrentPos = 0; nCurrentPos < mScriptLength; nCurrentPos++){
+				CommandInfo mCommInfo = mCmdList.get(nCurrentPos);
 				if (mCommInfo == null) {
 					continue;
 				}
-				
-				String strCmdName = mCommInfo.strName;
+
+				String strCmdName = mCommInfo.name;
 				List<Object> paramList = mCommInfo.arrArgs;
-				
+
 				//从工厂获取对应实现类
 				Command cmd = JudgeCommand.getCommandInstance(strCmdName);
 				if (cmd == null) {
 					continue;
 				}
-				
+
 				//检查参数是否正确
 				cmd.checkParams(mGlobal, paramList);
-				
-				String strMsg = cmd.runItem(mGlobal, paramList);
-				if (strMsg == null) {
+
+				String msg = cmd.runItem(mGlobal, paramList);
+				if (msg == null) {
 					continue;
 				}
-				
+
 				try {
-					return Integer.parseInt(strMsg);
+					if (JTools.isDigit(msg)) {
+						nExitCode = Integer.valueOf(msg);
+					}
+					return (String) mGlobal.get("STR_RETURN");
 				} catch (NumberFormatException e) {
 					//出现异常说明执行的是jump方法
-					//找到tag方法中标签为strMsg的位置
-					boolean flag = false;
-					for (int jump = 0; jump < size; jump++){
-						CommandInfo ci = commandList.get(jump);
-						if (ci == null) {
-							continue;
-						}
-						
-						String strName = ci.strName;
-						if (strName.equals("tag")) {
-							String strTagName = (String) ci.arrArgs.get(0);
-							if (strTagName.equals(strMsg)){
-								//更改执行位置
-								i = jump;
-								flag = true;
-								break;
-							}
-						}
-					}
-					if (flag) {
+					//找到tag方法中标签为msg的位置
+					if (jumpToTag(msg)) {
 						continue;
 					}
-					throw new CrtException("jump方法中tag参数:" + strMsg + "错误");
+					throw new CrtException("jump方法中tag参数:" + msg + "错误");
 				}
 			}
-			return 0;
-		} catch (Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
-			return -1;
 		}
+		return "";
 	}
-	
+
+	private boolean jumpToTag(String tag) {
+		for (int i = 0; i < mScriptLength; i++) {
+			CommandInfo ci = mCmdList.get(i);
+			if ("tag".equals(ci.name)) {
+				String tagName = (String) ci.arrArgs.get(0);
+				if (tagName.equals(tag)) {
+					nCurrentPos = i;
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	public static void main(String[] args) {
-//		System.out.println(executeScript("D:/test/remote cmd/check_boss1_service.txt"));
-		System.out.println(executeScript("D:/test/cmd03.txt"));
+		String path = "/home/falcon/test/test.script";
+		ShellMain sm = new ShellMain(path);
+		String msg = sm.run();
+		System.out.println(msg);
 	}
 	
 }
