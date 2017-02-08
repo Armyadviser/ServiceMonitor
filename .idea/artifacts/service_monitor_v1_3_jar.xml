@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="service-monitor-v1.3:jar">
+    <output-path>$USER_HOME$/test</output-path>
+    <root id="archive" name="service-monitor-v1.3.jar">
+      <element id="module-output" name="ServiceMonitor" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/ganymed-ssh2-build261.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/mail.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

@@ -1,6 +1,5 @@
 package com.gesoft.adsl.tools.commands.shell;
 
-import com.gesoft.adsl.tools.JTools;
 import com.gesoft.adsl.tools.commands.shell.impl.JudgeCommand;
 import com.gesoft.adsl.tools.ssh2.CommandInfo;
 import com.gesoft.adsl.tools.ssh2.CrtException;
@@ -19,23 +18,30 @@ public class ShellMain {
 	private List<CommandInfo> mCmdList;
 
 	/**
-	 * When the script file ends with the command exit(${num})
-	 * this value will be ${num}.
+	 * Global parameter pairs.
 	 */
-	private int nExitCode;
+	private Map<String, Object> mGlobal;
 
 	public ShellMain(String scriptPath) {
 		mCmdList = ScriptParser.parse(scriptPath);
 		nCurrentPos = 0;
 		mScriptLength = mCmdList.size();
+		mGlobal = new HashMap<String, Object>();
 	}
 
-	public int getExitCode() {
-		return nExitCode;
+	public void setArgument(String name, String value) {
+		mGlobal.put(name, value);
+	}
+
+	public void removeArgument(String name) {
+		mGlobal.remove(name);
+	}
+
+	public String getArgument(String name) {
+		return (String) mGlobal.get(name);
 	}
 	
 	public String run() {
-		Map<String, Object> mGlobal = new HashMap<String, Object>();
 		try {
 			for(nCurrentPos = 0; nCurrentPos < mScriptLength; nCurrentPos++){
 				CommandInfo mCommInfo = mCmdList.get(nCurrentPos);
@@ -61,10 +67,7 @@ public class ShellMain {
 				}
 
 				try {
-					if (JTools.isDigit(msg)) {
-						nExitCode = Integer.valueOf(msg);
-					}
-					return (String) mGlobal.get("STR_RETURN");
+					return msg;
 				} catch (NumberFormatException e) {
 					//出现异常说明执行的是jump方法
 					//找到tag方法中标签为msg的位置
@@ -97,8 +100,10 @@ public class ShellMain {
 	public static void main(String[] args) {
 		String path = "/home/falcon/test/test.script";
 		ShellMain sm = new ShellMain(path);
-		String msg = sm.run();
-		System.out.println(msg);
+		sm.setArgument("global_login", "lyelepgzz0120jtt");
+		sm.setArgument("global_file", "20170208_fail");
+		sm.run();
+		System.out.println(sm.getArgument("MSG"));
 	}
 	
 }

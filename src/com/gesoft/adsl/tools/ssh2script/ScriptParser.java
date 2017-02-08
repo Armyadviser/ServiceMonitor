@@ -88,5 +88,9 @@ public class ScriptParser {
 		return Collections.emptyList();
 	}
 	
-	
+	public static String getCenterContent(String src, String prefix, String suffix) {
+		int nBegin = src.indexOf(prefix) + prefix.length();
+		int nEnd = src.indexOf(suffix, nBegin + 1);
+		return src.substring(nBegin, nEnd);
+	}
 }

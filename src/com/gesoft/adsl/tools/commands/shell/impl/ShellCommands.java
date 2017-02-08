@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 import com.gesoft.adsl.tools.commands.shell.Command;
 import com.gesoft.adsl.tools.ssh2.CrtException;
 import com.gesoft.adsl.tools.ssh2.CrtExecutor;
+import com.gesoft.adsl.tools.ssh2script.ScriptParser;
 
 /**
  * @author Wu
@@ -30,22 +31,10 @@ class ShellCommands extends Command{
 			
 		String strCmd = (String) arrArgs.get(0);
 		//if there is a string like "${}", replace it with the value of the GlobalMap
-		if(strCmd.contains("${")){
-			String strParameter = strCmd;
-			Pattern p = Pattern.compile("\\{.*?\\}");
-	        Matcher m = p.matcher(strParameter);
-	        
-	        while (m.find()) {
-	        	strParameter = m.group(0).replaceAll("\\{([^\\]]*)\\}", "$1");
-			}
-	        
-	        if(mGlobal.containsKey(strParameter)){
-	        	strCmd = strCmd.replace(strParameter, (String)mGlobal.get(strParameter));
-	        	strCmd = strCmd.replace("$", "");
-	        	strCmd = strCmd.replace("{", "");
-	        	strCmd = strCmd.replace("}", "");
-	        	strCmd = strCmd.replace("\"", "");
-	        }
+		while (strCmd.contains("${")) {
+			String parameterKey = ScriptParser.getCenterContent(strCmd, "${", "}");
+			String parameterValue = (String) mGlobal.get(parameterKey);
+			strCmd = strCmd.replace("${" + parameterKey + "}", parameterValue);
 		}
 		
 		

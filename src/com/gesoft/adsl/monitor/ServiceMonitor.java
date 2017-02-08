@@ -122,9 +122,8 @@ public class ServiceMonitor {
 					//执行脚本，获得返回值
 					ShellMain sm = new ShellMain(
 							mMonitor.getBasePath() + mMonitor.getScriptPath(strSection));
-					sm.run();
-					int nExitCode = sm.getExitCode();
-					
+					int nExitCode = Integer.parseInt(sm.run());
+
 					//判断是否发送短信或邮件
 					boolean bSend = ifSend(strSection, nExitCode, currentTime, nRepeat);
 					
