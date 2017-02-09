@@ -97,14 +97,5 @@ public class ShellMain {
 		return false;
 	}
 
-	public static void main(String[] args) {
-		String path = "/home/falcon/test/test.script";
-		ShellMain sm = new ShellMain(path);
-		sm.setArgument("global_login", "lyelepgzz0120jtt");
-		sm.setArgument("global_file", "20170208_fail");
-		sm.run();
-		System.out.println(sm.getArgument("MSG"));
-	}
-	
 }
 
