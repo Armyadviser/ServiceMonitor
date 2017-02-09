@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.gesoft.adsl.tools.JTools;
 import com.gesoft.adsl.tools.ssh2.CommandInfo;
 
 /**
@@ -12,6 +13,8 @@ import com.gesoft.adsl.tools.ssh2.CommandInfo;
  *	提供各种字符串操作
  */
 public class ScriptParser {
+
+	private static String parentPath;
 	
 	/**
 	 * 检查命令中括号是否匹配
@@ -36,10 +39,14 @@ public class ScriptParser {
 	 * @return	根据各条命令生成list
 	 */
 	public static List<CommandInfo> parse(String strPath) {
+		if (strPath.contains("/")) {
+			parentPath = JTools.getParentPath(strPath);
+		}
+		String fileName = JTools.getFileName(strPath);
 		FileReader reader = new FileReader();
-		boolean bOpen = reader.open(strPath);
+		boolean bOpen = reader.open(parentPath + fileName);
 		if (!bOpen) {
-			System.err.println("文件打开失败：" + strPath);
+			System.err.println("文件打开失败：" + parentPath + fileName);
 			return Collections.emptyList();
 		}
 

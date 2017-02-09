@@ -13,11 +13,15 @@ public class CommandInfo {
 	 * 参数列表
 	 */
 	public ArrayList<Object> arrArgs = new ArrayList<Object>();
-	
+
+	@Override
 	public String toString() {
-		return null;
+		return "CommandInfo{" +
+				"name='" + name + '\'' +
+				", arrArgs=" + arrArgs +
+				'}';
 	}
-	
+
 	/**
 	 * 命令反序列化，将strCmd解析
 	 */
